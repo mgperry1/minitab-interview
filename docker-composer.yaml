@@ -1,0 +1,19 @@
+services:
+  stats-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: stats-service:latest
+    container_name: stats-service
+    environment:
+      - PORT=${PORT:-3000}
+      - APP_VERSION=${APP_VERSION:-1.0.0}
+    ports:
+      - "${HOST_PORT:-3000}:${PORT:-3000}"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request, os; port = os.environ.get('PORT', '3000'); urllib.request.urlopen(f'http://localhost:{port}/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 3s
+    restart: unless-stopped
